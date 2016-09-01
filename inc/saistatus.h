@@ -207,6 +207,22 @@
 #define SAI_STATUS_ATTR_NOT_SUPPORTED_MAX SAI_STATUS_CODE(0x0005FFFFL)
 
 /**
+ *  Attribute is read only (range from 0x00060000L to 0x006FFFFL)
+ *  Return this when a write/set/update operation is being performed 
+ *  on a read only attribute.
+ */
+#define SAI_STATUS_ATTR_READ_ONLY_0   SAI_STATUS_CODE(0x00060000L)
+#define SAI_STATUS_ATTR_READ_ONLY_MAX SAI_STATUS_CODE(0x0006FFFFL)
+
+/**
+ *  Attribute is write/set only (range from 0x00070000L to 0x007FFFFL)
+ *  Return this when a read/get operation is being performed on a
+ *  write/set only attribute.
+ */
+#define SAI_STATUS_ATTR_WRITE_ONLY_0   SAI_STATUS_CODE(0x00070000L)
+#define SAI_STATUS_ATTR_WRITE_ONLY_MAX SAI_STATUS_CODE(0x0007FFFFL)
+
+/**
  *  Macros to check if attribute related error is within the specified range
  */
 #define SAI_STATUS_IS_INVALID_ATTRIBUTE(x)      ((x) & ~0xFFFF == SAI_STATUS_INVALID_ATTRIBUTE_0)
