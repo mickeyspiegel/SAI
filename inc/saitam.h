@@ -412,6 +412,370 @@ typedef sai_status_t (*sai_set_tam_event_threshold_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
+ * @brief TAM INT types
+ */
+typedef enum _sai_tam_int_type_t
+{
+    /**
+     * @brief INT type IOAM
+     */
+    SAI_TAM_INT_TYPE_IOAM,
+
+    /**
+     * @brief INT type IFA1
+     */
+    SAI_TAM_INT_TYPE_IFA1,
+
+    /**
+     * @brief INT type IFA2
+     */
+    SAI_TAM_INT_TYPE_IFA2,
+
+    /**
+     * @brief INT type P4 INT v1
+     */
+    SAI_TAM_INT_TYPE_P4_INT_1,
+
+    /**
+     * @brief INT type P4 INT v2
+     */
+    SAI_TAM_INT_TYPE_P4_INT_2,
+
+    /**
+     * @brief INT type hop-by-hop reports
+     */
+    SAI_TAM_INT_TYPE_HOP_BY_HOP_REPORTS,
+
+    /**
+     * @brief INT type vendor extension
+     */
+    SAI_TAM_INT_TYPE_EXTN
+
+} sai_tam_int_type_t;
+
+/**
+ * @brief Attributes for TAM INT Group
+ */
+typedef enum _sai_tam_int_group_attr_t
+{
+
+    /**
+     * @brief Start of Attributes
+     */
+    SAI_TAM_INT_GROUP_ATTR_START,
+
+    /**
+     * @brief Type of INT method
+     *
+     * @type sai_tam_int_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_TAM_INT_GROUP_ATTR_TYPE = SAI_TAM_INT_GROUP_ATTR_START,
+
+    /**
+     * @brief IOAM trace type
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @condition SAI_TAM_INT_GROUP_ATTR_TYPE == SAI_TAM_INT_TYPE_IOAM
+     */
+    SAI_TAM_INT_GROUP_ATTR_IOAM_TRACE_TYPE,
+
+    /**
+     * @brief Inline or Clone mode
+     * Inline mode will insert header and metadata in live packet
+     * Clone mode will insert header and metadata in cloned packet
+     *
+     * @type bool
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_TAM_INT_GROUP_ATTR_INLINE,
+
+    /**
+     * @brief Trace vector value
+     * trace vector is used to specified the fields
+     * of interest in metadata header
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @condition SAI_TAM_INT_GROUP_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA1 or SAI_TAM_INT_TYPE_IFA2
+     * @default 0
+     */
+    SAI_TAM_INT_GROUP_ATTR_IFA_TRACE_VECTOR,
+
+    /**
+     * @brief Action vector value
+     * action vector is used to specified the actions
+     * of interest on metadata header
+     * value of 0 means no actions of interest
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @condition SAI_TAM_INT_GROUP_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA1 or SAI_TAM_INT_TYPE_IFA2
+     * @default 0
+     */
+    SAI_TAM_INT_GROUP_ATTR_IFA_ACTION_VECTOR,
+
+    /**
+     * @brief P4 INT instruction bitmap
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @condition SAI_TAM_INT_GROUP_ATTR_TYPE == SAI_TAM_INT_TYPE_P4_INT_1 or SAI_TAM_INT_TYPE_P4_INT_2
+     */
+    SAI_TAM_INT_GROUP_ATTR_P4_INT_INSTRUCTION_BITMAP,
+
+    /**
+     * @brief Maximum number of hope allowed in the path
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_GROUP_ATTR_MAX_HOP_COUNT,
+
+    /**
+     * @brief Maximum length of metadata stack, always word aligned
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_GROUP_ATTR_MAX_LENGTH,
+
+    /**
+     * @brief Metadata name space ID
+     * name space id defines the applicable format of metadata header
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_GROUP_ATTR_NAME_SPACE_ID,
+
+    /**
+     * @brief Metadata name space ID scope
+     * name space id scope is global or local
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_TAM_INT_GROUP_ATTR_NAME_SPACE_ID_GLOBAL,
+
+    /**
+     * @brief End of Attributes
+     */
+    SAI_TAM_INT_GROUP_ATTR_END,
+
+    /** Custom range base value */
+    SAI_TAM_INT_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_TAM_INT_GROUP_ATTR_CUSTOM_RANGE_END
+
+} sai_tam_int_group_attr_t;
+
+/**
+ * @brief Create and return a INT group object
+ *
+ * @param[out] tam_int_group_id INT object
+ * @param[in] switch_id Switch object id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_tam_int_group_fn)(
+        _Out_ sai_object_id_t *tam_int_group_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Deletes a specified INT group object
+ *
+ * @param[in] tam_int_group_id INT group object id
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_tam_int_group_fn)(
+        _In_ sai_object_id_t tam_int_group_id);
+
+/**
+ * @brief Get values for specified INT group object attributes
+ *
+ * @param[in] tam_int_group_id INT group object id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_tam_int_group_attribute_fn)(
+        _In_ sai_object_id_t tam_int_group_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Set value for a specified INT group_object attribute
+ *
+ * @param[in] tam_int_group_id INT group object id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_tam_int_group_attribute_fn)(
+        _In_ sai_object_id_t tam_int_group_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Attributes for TAM INT
+ */
+typedef enum _sai_tam_int_attr_t
+{
+
+    /**
+     * @brief Start of Attributes
+     */
+    SAI_TAM_INT_ATTR_START,
+
+    /**
+     * @brief Globally unique switch ID
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_SWITCH_ID = SAI_TAM_INT_ATTR_START,
+
+    /**
+     * @brief Probe Marker 1
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_TAM_INT_ATTR_PB1,
+
+    /**
+     * @brief Probe Marker 2
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_TAM_INT_ATTR_PB2,
+
+    /**
+     * @brief Protocol value used for INT
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_L3_PROTO,
+
+    /**
+     * @brief DSCP value used to indicate presence of INT
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_TAM_INT_ATTR_INT_DSCP,
+
+    /**
+     * @brief Specifies the ports at the edge of the TAM INT domain
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
+     * @default empty
+     */
+    SAI_TAM_INT_ATTR_EDGE_PORT_LIST,
+
+    /**
+     * @brief TAM INT flow liveness period in seconds
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_FLOW_LIVENESS_PERIOD,
+
+    /**
+     * @brief Latency sensitivity for flow state change detection
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_LATENCY_SENSITIVITY,
+
+    /**
+     * @brief End of Attributes
+     */
+    SAI_TAM_INT_ATTR_END,
+
+    /** Custom range base value */
+    SAI_TAM_INT_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_TAM_INT_ATTR_CUSTOM_RANGE_END
+
+} sai_tam_int_attr_t;
+
+/**
+ * @brief Create and return a INT object
+ *
+ * @param[out] tam_int_id INT object
+ * @param[in] switch_id Switch object id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_tam_int_fn)(
+        _Out_ sai_object_id_t *tam_int_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Deletes a specified INT object
+ *
+ * @param[in] tam_int_id INT object id
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_tam_int_fn)(
+        _In_ sai_object_id_t tam_int_id);
+
+/**
+ * @brief Get values for specified INT object attributes
+ *
+ * @param[in] tam_int_id INT object id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_tam_int_attribute_fn)(
+        _In_ sai_object_id_t tam_int_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Set value for a specified INT object attribute
+ *
+ * @param[in] tam_int_id INT object id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_tam_int_attribute_fn)(
+        _In_ sai_object_id_t tam_int_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
  * @brief TAM telemetry types supported
  */
 typedef enum _sai_tam_telemetry_type_t
@@ -1602,6 +1966,16 @@ typedef struct _sai_tam_api_t
     sai_remove_tam_event_threshold_fn         remove_tam_event_threshold;
     sai_set_tam_event_threshold_attribute_fn  set_tam_event_threshold_attribute;
     sai_get_tam_event_threshold_attribute_fn  get_tam_event_threshold_attribute;
+
+    sai_create_tam_int_fn                     create_tam_int;
+    sai_remove_tam_int_fn                     remove_tam_int;
+    sai_set_tam_int_attribute_fn              set_tam_int_attribute;
+    sai_get_tam_int_attribute_fn              get_tam_int_attribute;
+
+    sai_create_tam_int_group_fn               create_tam_int_group;
+    sai_remove_tam_int_group_fn               remove_tam_int_group;
+    sai_set_tam_int_group_attribute_fn        set_tam_int_group_attribute;
+    sai_get_tam_int_group_attribute_fn        get_tam_int_group_attribute;
 
     sai_create_tam_tel_type_fn                create_tam_tel_type;
     sai_remove_tam_tel_type_fn                remove_tam_tel_type;
